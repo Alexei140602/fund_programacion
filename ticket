@@ -1,0 +1,11 @@
+#include <stdio.h>
+
+int main(){
+  FILE *file = fopen("ticket.txt", "w");
+  if (file != NULL){
+    
+  } else {
+    puts("Error al generar el ticket");
+  }
+  return 0;
+}
