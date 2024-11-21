@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_USUARIOS 100
+#define MAX_NOMBRE 100
+#define MAX_CORREO 100
+#define MAX_TELEFONO 20
+#define MAX_CONTRASENA 20
+
+
+typedef struct {
+    char nombre[MAX_NOMBRE];
+    char correo[MAX_CORREO];
+    char telefono[MAX_TELEFONO];
+    char contrasena[MAX_CONTRASENA]; 
+} Usuario;
+
+
+int registrar_usuario(Usuario *usuarios, int *num_usuarios) {
+    if (*num_usuarios >= MAX_USUARIOS) {
+        printf("No se pueden registrar más usuarios.\n");
+        return 0;
+    }
+
+    Usuario nuevo_usuario;
+
+   
+    printf("INGRESA TU NOMBRE COMPLETO: ");
+    fgets(nuevo_usuario.nombre, MAX_NOMBRE, stdin);
+    nuevo_usuario.nombre[strcspn(nuevo_usuario.nombre, "\n")] = 0; 
+
+    printf("INGRESA TU CORREO ELECTRONICO: ");
+    fgets(nuevo_usuario.correo, MAX_CORREO, stdin);
+    nuevo_usuario.correo[strcspn(nuevo_usuario.correo, "\n")] = 0;  
+    printf("INGRESA TU NUMERO DE TELEFONO: ");
+    fgets(nuevo_usuario.telefono, MAX_TELEFONO, stdin);
+    nuevo_usuario.telefono[strcspn(nuevo_usuario.telefono, "\n")] = 0;  
+
+    
+    printf("INGRESA TU CONTRASEÑA: ");
+    fgets(nuevo_usuario.contrasena, MAX_CONTRASENA, stdin);
+    nuevo_usuario.contrasena[strcspn(nuevo_usuario.contrasena, "\n")] = 0;  
+    
+    usuarios[*num_usuarios] = nuevo_usuario;
+    (*num_usuarios)++;
+
+    
+    printf("\nREGISTRADO EXITOSAMENTE.\n");
+    return 1;
+}
+
+
+int login(Usuario *usuarios, int num_usuarios) {
+    char correo[MAX_CORREO], contrasena[MAX_CONTRASENA];
+
+   
+    printf("\nINGRESA TU CORREO ELECTRONICO: ");
+    fgets(correo, MAX_CORREO, stdin);
+    correo[strcspn(correo, "\n")] = 0;  
+
+    printf("INGRESA TU CONTRASEÑA: ");
+    fgets(contrasena, MAX_CONTRASENA, stdin);
+    contrasena[strcspn(contrasena, "\n")] = 0;  
+
+   
+    for (int i = 0; i < num_usuarios; i++) {
+        if (strcmp(usuarios[i].correo, correo) == 0 && strcmp(usuarios[i].contrasena, contrasena) == 0) {
+            printf("BIENVENIDO A TRAVELBUS, %s.\n", usuarios[i].nombre);
+            return 1;  
+        }
+    }
+
+    printf("Correo o contraseña incorrectos.\n");
+    return 0;  
+}
+
+int main() {
+    Usuario usuarios[MAX_USUARIOS];  
+    int num_usuarios = 0; 
+    int opcion;
+
+    do {
+        printf("\n1. Registrar usuario\n");
+        printf("2. Iniciar sesión\n");
+        printf("3. Salir\n");
+        printf("Seleccione una opción: ");
+        scanf("%d", &opcion);
+        getchar();  
+
+        switch (opcion) {
+            case 1:
+                if (registrar_usuario(usuarios, &num_usuarios)) {
+                    printf("REGISTRO EXITOSO.\n");
+                }
+                break;
+            case 2:
+                if (login(usuarios, num_usuarios)) {
+                    
+                }
+                break;
+            case 3:
+                printf("SALIENDO DEL SISTEMA\n");
+                break;
+            default:
+                printf("Opción no válida. Intente nuevamente.\n");
+        }
+    } while (opcion != 3);
+
+    return 0;
+}
