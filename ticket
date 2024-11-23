@@ -3,7 +3,8 @@
 int main(){
   FILE *file = fopen("ticket.txt", "w");
   if (file != NULL){
-    
+    fprintf(file, "Nombre: %s\nAutobus: \nDestino: %s\nAsiento: %i", /*arreglo con el nombre, autobus, arreglo con el nombre del destino, coordenadas del arreglo con el asiento
+    fclose(file);
   } else {
     puts("Error al generar el ticket");
   }
