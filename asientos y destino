@@ -1,7 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #define MAX_NOMBRE 100
 #define MAX_CORREO 100
 #define MAX_TELEFONO 20
-#define MAX_CONTRASENA 20
+#define MAX_CONTRASEÑA 20
 #define MAX_DESTINOS 5
 #define MAX_ASIENTOS 40
 
@@ -10,9 +14,18 @@ typedef struct {
     int asientos[MAX_ASIENTOS];
 } Autobus;
 
-// Función para inicializar autobuses con destinos y asientos disponibles
+// Prototipos de funciones
+void inicializar_autobuses(Autobus autobuses[], int num_destinos);
+void mostrar_destinos(Autobus autobuses[], int num_destinos);
+void seleccionar_viaje(Autobus autobuses[], int num_destinos);
+void reservar_asiento_detallado();
+void registrar_usuario(char ***nombres, char ***correos, char ***telefonos, char ***contraseñas, int *num_usuarios);
+int login(char **nombres, char **correos, char **contraseñas, int num_usuarios);
+void liberar_memoria(char **nombres, char **correos, char **telefonos, char **contraseñas, int num_usuarios);
+
+// Inicializar destinos y asientos de autobuses
 void inicializar_autobuses(Autobus autobuses[], int num_destinos) {
-    char *destinos[] = {"chihuahua", "cuernavaca", "michoacan", "nezahualcoyotl", "ecatepec"};
+    char *destinos[] = {"Chihuahua", "Cuernavaca", "Michoacán", "Nezahualcóyotl", "Ecatepec"};
     for (int i = 0; i < num_destinos; i++) {
         strcpy(autobuses[i].destino, destinos[i]);
         for (int j = 0; j < MAX_ASIENTOS; j++) {
@@ -29,120 +42,157 @@ void mostrar_destinos(Autobus autobuses[], int num_destinos) {
     }
 }
 
-// Seleccionar destino, autobús y asiento
+// Función para seleccionar transporte y reservar asiento
 void seleccionar_viaje(Autobus autobuses[], int num_destinos) {
-    int opcion_destino, asiento;
-    mostrar_destinos(autobuses, num_destinos);
+    int transporte;
+    printf("Selecciona un tipo de transporte:\n");
+    printf("1. Autobús turístico\n");
+    printf("2. Autobús de carretera\n");
+    printf("3. Vagonetas\n");
+    scanf("%d", &transporte);
+    getchar(); // Limpiar buffer
 
-    printf("Selecciona un destino (1-%d): ", num_destinos);
-    scanf("%d", &opcion_destino);
-    getchar(); // Limpiar el buffer de entrada
-
-    if (opcion_destino < 1 || opcion_destino > num_destinos) {
-        printf("Opción de destino inválida.\n");
-        return;
+    switch (transporte) {
+        case 1:
+            printf("Has seleccionado autobús turístico.\n");
+            reservar_asiento_detallado();
+            break;
+        case 2:
+            printf("Has seleccionado autobús de carretera.\n");
+            reservar_asiento_detallado();
+            break;
+        case 3:
+            printf("Has seleccionado vagonetas.\n");
+            reservar_asiento_detallado();
+            break;
+        default:
+            printf("Opción no válida.\n");
     }
+}
 
-    int destino_seleccionado = opcion_destino - 1;
+// Reservar asiento en detalle
+void reservar_asiento_detallado() {
+    int comprar = 0;
+    int filas = 15, columnas = 4; // Configuración general
+    int matriz[filas][columnas];
 
-    // Mostrar asientos disponibles
-    printf("\nASIENTOS DISPONIBLES EN %s:\n", autobuses[destino_seleccionado].destino);
-    for (int i = 0; i < MAX_ASIENTOS; i++) {
-        if (autobuses[destino_seleccionado].asientos[i] == 0) {
-            printf("Asiento %d: Disponible\n", i + 1);
+    // Inicializar matriz
+    for (int i = 0; i < filas; i++) {
+        for (int j = 0; j < columnas; j++) {
+            matriz[i][j] = (i + 1) * 10 + (j + 1);
         }
     }
 
-    printf("Selecciona un asiento (1-%d): ", MAX_ASIENTOS);
-    scanf("%d", &asiento);
-    getchar(); // Limpiar el buffer de entrada
+    do {
+        printf("ASIENTOS DISPONIBLES:\n");
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                if (matriz[i][j] == 0) {
+                    printf("XX\t");
+                } else {
+                    printf("%d\t", matriz[i][j]);
+                }
+            }
+            printf("\n");
+        }
 
-    if (asiento < 1 || asiento > MAX_ASIENTOS || autobuses[destino_seleccionado].asientos[asiento - 1] == 1) {
-        printf("Asiento no válido o ya ocupado.\n");
-        return;
-    }
+        int fila, columna;
+        printf("Selecciona la fila (1-%d): ", filas);
+        scanf("%d", &fila);
+        printf("Selecciona la columna (1-%d): ", columnas);
+        scanf("%d", &columna);
 
-    // Reservar asiento
-    autobuses[destino_seleccionado].asientos[asiento - 1] = 1;
-    printf("¡Has reservado el asiento %d en el destino %s!\n", asiento, autobuses[destino_seleccionado].destino);
+        if (fila < 1 || fila > filas || columna < 1 || columna > columnas || matriz[fila - 1][columna - 1] == 0) {
+            printf("Selección inválida. Intenta de nuevo.\n");
+            continue;
+        }
+
+        printf("Reservaste el asiento %d.\n", matriz[fila - 1][columna - 1]);
+        matriz[fila - 1][columna - 1] = 0; // Marcar asiento como ocupado
+
+        printf("¿Quieres seguir reservando? (0 = Sí, 1 = No): ");
+        scanf("%d", &comprar);
+    } while (comprar == 0);
+
+    printf("Gracias por usar el sistema de reserva.\n");
 }
 
-void registrar_usuario(char ***nombres, char ***correos, char ***telefonos, char ***contrasenas, int *num_usuarios) {
+// Registro de usuarios
+void registrar_usuario(char ***nombres, char ***correos, char ***telefonos, char ***contraseñas, int *num_usuarios) {
     char buffer[MAX_NOMBRE];
 
     *nombres = realloc(*nombres, (*num_usuarios + 1) * sizeof(char *));
     *correos = realloc(*correos, (*num_usuarios + 1) * sizeof(char *));
     *telefonos = realloc(*telefonos, (*num_usuarios + 1) * sizeof(char *));
-    *contrasenas = realloc(*contrasenas, (*num_usuarios + 1) * sizeof(char *));
+    *contraseñas = realloc(*contraseñas, (*num_usuarios + 1) * sizeof(char *));
 
-    if (!(*nombres) || !(*correos) || !(*telefonos) || !(*contrasenas)) {
-        printf("Error al asignar memoria.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    printf("INGRESA TU NOMBRE COMPLETO: ");
+    printf("Nombre completo: ");
     fgets(buffer, MAX_NOMBRE, stdin);
     buffer[strcspn(buffer, "\n")] = 0;
     (*nombres)[*num_usuarios] = strdup(buffer);
 
-    printf("INGRESA TU CORREO ELECTRONICO: ");
+    printf("Correo electrónico: ");
     fgets(buffer, MAX_CORREO, stdin);
     buffer[strcspn(buffer, "\n")] = 0;
     (*correos)[*num_usuarios] = strdup(buffer);
 
-    printf("INGRESA TU NUMERO DE TELEFONO: ");
+    printf("Teléfono: ");
     fgets(buffer, MAX_TELEFONO, stdin);
     buffer[strcspn(buffer, "\n")] = 0;
     (*telefonos)[*num_usuarios] = strdup(buffer);
 
-    printf("INGRESA TU CONTRASEÑA: ");
-    fgets(buffer, MAX_CONTRASENA, stdin);
+    printf("Contraseña: ");
+    fgets(buffer, MAX_CONTRASEÑA, stdin);
     buffer[strcspn(buffer, "\n")] = 0;
-    (*contrasenas)[*num_usuarios] = strdup(buffer);
+    (*contraseñas)[*num_usuarios] = strdup(buffer);
 
     (*num_usuarios)++;
-    printf("\nREGISTRADO EXITOSAMENTE.\n");
+    printf("Usuario registrado exitosamente.\n");
 }
 
-int login(char **nombres, char **correos, char **contrasenas, int num_usuarios) {
-    char correo[MAX_CORREO], contrasena[MAX_CONTRASENA];
+// Login de usuarios
+int login(char **nombres, char **correos, char **contraseñas, int num_usuarios) {
+    char correo[MAX_CORREO], contraseña[MAX_CONTRASEÑA];
 
-    printf("\nINGRESA TU CORREO ELECTRONICO: ");
+    printf("Correo: ");
     fgets(correo, MAX_CORREO, stdin);
     correo[strcspn(correo, "\n")] = 0;
 
-    printf("INGRESA TU CONTRASEÑA: ");
-    fgets(contrasena, MAX_CONTRASENA, stdin);
-    contrasena[strcspn(contrasena, "\n")] = 0;
+    printf("Contraseña: ");
+    fgets(contraseña, MAX_CONTRASEÑA, stdin);
+    contraseña[strcspn(contraseña, "\n")] = 0;
 
     for (int i = 0; i < num_usuarios; i++) {
-        if (strcmp(correos[i], correo) == 0 && strcmp(contrasenas[i], contrasena) == 0) {
-            printf("BIENVENIDO A TRAVELBUS, %s.\n", nombres[i]);
+        if (strcmp(correos[i], correo) == 0 && strcmp(contraseñas[i], contraseña) == 0) {
+            printf("Bienvenido, %s.\n", nombres[i]);
             return 1;
         }
     }
 
-    printf("Correo o contraseña incorrectos.\n");
+    printf("Credenciales inválidas.\n");
     return 0;
 }
 
-void liberar_memoria(char **nombres, char **correos, char **telefonos, char **contrasenas, int num_usuarios) {
+// Liberar memoria
+void liberar_memoria(char **nombres, char **correos, char **telefonos, char **contraseñas, int num_usuarios) {
     for (int i = 0; i < num_usuarios; i++) {
         free(nombres[i]);
         free(correos[i]);
         free(telefonos[i]);
-        free(contrasenas[i]);
+        free(contraseñas[i]);
     }
     free(nombres);
     free(correos);
     free(telefonos);
-    free(contrasenas);
+    free(contraseñas);
 }
 
+// Main
 int main() {
-    char **nombres = NULL, **correos = NULL, **telefonos = NULL, **contrasenas = NULL;
+    char **nombres = NULL, **correos = NULL, **telefonos = NULL, **contraseñas = NULL;
     int num_usuarios = 0;
     int opcion;
+
     Autobus autobuses[MAX_DESTINOS];
     inicializar_autobuses(autobuses, MAX_DESTINOS);
 
@@ -156,22 +206,23 @@ int main() {
 
         switch (opcion) {
             case 1:
-                registrar_usuario(&nombres, &correos, &telefonos, &contrasenas, &num_usuarios);
+                registrar_usuario(&nombres, &correos, &telefonos, &contraseñas, &num_usuarios);
                 break;
             case 2:
-                if (login(nombres, correos, contrasenas, num_usuarios)) {
+                if (login(nombres, correos, contraseñas, num_usuarios)) {
                     seleccionar_viaje(autobuses, MAX_DESTINOS);
                 }
                 break;
             case 3:
-                printf("SALIENDO DEL SISTEMA\n");
-                liberar_memoria(nombres, correos, telefonos, contrasenas, num_usuarios);
+                liberar_memoria(nombres, correos, telefonos, contraseñas, num_usuarios);
+                printf("Gracias por usar el sistema.\n");
                 break;
             default:
-                printf("Opción no válida. Intente nuevamente.\n");
+                printf("Opción no válida.\n");
         }
     } while (opcion != 3);
 
     return 0;
 }
+
 
