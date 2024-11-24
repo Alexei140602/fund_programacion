@@ -1,4 +1,12 @@
 #include <stdio.h>
+//funcion para mostrar el ticket
+void mostrarticket(char *archivo){
+        char texto;
+        FILE *file = fopen(archivo, "r");
+        while ((texto = fgetc(file)) != EOF){
+                putchar(texto);
+        }
+}
 
 int main(){
   FILE *file = fopen("ticket.txt", "w");
@@ -8,5 +16,6 @@ int main(){
   } else {
     puts("Error al generar el ticket");
   }
+  mostrarticket("ticket.txt");
   return 0;
 }
