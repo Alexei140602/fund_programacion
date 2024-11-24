@@ -1,21 +1,72 @@
 #include <stdio.h>
-//funcion para mostrar el ticket
+//Función para mostrar el ticket
 void mostrarticket(char *archivo){
         char texto;
         FILE *file = fopen(archivo, "r");
         while ((texto = fgetc(file)) != EOF){
                 putchar(texto);
         }
+        fclose(file);
 }
 
-int main(){
-  FILE *file = fopen("ticket.txt", "w");
-  if (file != NULL){
-    fprintf(file, "Nombre: %s\nAutobus: \nDestino: %s\nAsiento: %i", /*arreglo con el nombre, autobus, arreglo con el nombre del destino, coordenadas del arreglo con el asiento
-    fclose(file);
-  } else {
-    puts("Error al generar el ticket");
-  }
-  mostrarticket("ticket.txt");
-  return 0;
+//Funcion para generar el ticket
+void main(){
+        char aut[100];
+        char dest[100];
+        char nombreArch[100];
+
+        switch (transporte){
+                case 1:
+                        aut[]="Autobus turístico";
+                        switch (destino){
+                                case 1:
+                                        dest[]="Circuito Histórico";
+                                        break;
+                                case 2:
+                                        dest[]="Tour Gastronómico";
+                                        break;
+                                case 3:
+                                        dest[]="Parque: La Mexicana";
+                                        break;
+                                case 4:
+                                        dest[]="Universum";
+                                        break;
+                        }
+                        break;
+                case 2:
+                        aut[]="Autobus de carretera";
+                        switch (destino){
+                                case 1:
+                                        dest[]="CDMX -> Puebla";
+                                        break;
+                                case 2:
+                                        dest[]="CDMX -> Querétaro";
+                                        break;
+                                case 3:
+                                        dest[]="CDMX -> Hidalgo";
+                                        break;
+                        }
+                        break;
+                case 3:
+                        aut[]="Vagonetas";
+                        switch (destino){
+                                case 1:
+                                        dest[]="CDMX -> Tepotzotlán";
+                                        break;
+                                case 2:
+                                        dest[]="CDMX -> Valle de Bravo";
+                                        break;
+                        }
+                        break;
+        }
+        sprintf(nombreArch, "%s.txt", correo);
+        FILE *file = fopen(nombreArch, "w");
+        if (file != NULL){
+                fprintf(file, "Nombre: %s\nAutobus: %s\nDestino: %s\nAsiento: %d\n", correo, aut, dest, matriz[fil][col]);
+                fclose(file);
+        } else {
+                puts("Error al generar el ticket");
+        }
+        mostrarticket(nombreArch);
+        return 0;
 }
